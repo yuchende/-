@@ -1,0 +1,158 @@
+
+
+
+1.存在重复元素 II
+		给定一个整数数组和一个整数 k，判断数组中是否存在两个不同的索引 i 和 j，使得 nums [i] = nums [j]，并且 i 和 j 的差的 绝对值 至多为 k。
+
+		示例 1:
+
+		输入: nums = [1,2,3,1], k = 3
+		输出: true
+		示例 2:
+
+		输入: nums = [1,0,1,1], k = 1
+		输出: true
+		示例 3:
+
+		输入: nums = [1,2,3,1,2,3], k = 2
+		输出: false
+		
+		思路：
+			双指针
+				1.窗口，一个窗口左边界不变为0，右边界一步一步增大。
+				2.每次判断紧靠右边界的一个元素是否等于窗口里面的某个元素，且下标只差满足小于k
+				
+			 用hash优化，优化查找过程为O(1),窗口内部的元素全部加入hash集合中。
+			 
+
+两个数组的交集 II
+			给定两个数组，编写一个函数来计算它们的交集。
+
+			示例 1:
+
+			输入: nums1 = [1,2,2,1], nums2 = [2,2]
+			输出: [2,2]
+			示例 2:
+
+			输入: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+			输出: [4,9]
+			
+			思路：
+				hash都是用空间换时间,优化查找效率，从O(N)到O(1)
+				将1个数组放入hash中，用另外一个数组中的每一个元素，检测是否在一个集合中。
+				
+				
+同构字符串
+		给定两个字符串 s 和 t，判断它们是否是同构的。
+
+		如果 s 中的字符可以被替换得到 t ，那么这两个字符串是同构的。
+
+		所有出现的字符都必须用另一个字符替换，同时保留字符的顺序。两个字符不能映射到同一个字符上，但字符可以映射自己本身。
+
+		示例 1:
+
+		输入: s = "egg", t = "add"
+		输出: true
+		示例 2:
+
+		输入: s = "foo", t = "bar"
+		输出: false
+		示例 3:
+
+		输入: s = "paper", t = "title"
+		输出: true
+		
+		思路：	
+			这是一个判断一个字符串类型的题
+			即是AABB型还是ABCDEF型的
+			
+			给每一个字符确定一个唯一的数字即可。这里选择下标。
+			egg  -->  0 1 1
+			add  -->  0 1 1
+			
+			paper --> 0 1 0 3 4
+			title --> 0 1 0 3 4
+			
+			利用hash来 ，遍历字符数组，当前字符是否在hash集合中，不在，将当前字符加入hash集合中  key=当前字符，value=当前字符的下标。
+	
+
+49. 字母异位词分组
+		给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
+
+		示例:
+
+		输入: ["eat", "tea", "tan", "ate", "nat", "bat"],
+		输出:
+		[
+		  ["ate","eat","tea"],
+		  ["nat","tan"],
+		  ["bat"]
+		]
+		
+		思路：	
+			字符数组排序后，在用hash判断是否添加。
+			
+		public List<List<String>> groupAnagrams(String[] strs) {
+				if (strs.length == 0) return new ArrayList();
+				Map<String, List> ans = new HashMap<String, List>();
+				for (String s : strs) {
+					char[] ca = s.toCharArray();
+					Arrays.sort(ca);
+					String key = String.valueOf(ca);
+					if (!ans.containsKey(key)) ans.put(key, new ArrayList());
+					ans.get(key).add(s);
+				}
+				return new ArrayList(ans.values());
+			}
+
+
+50.寻找重复子树
+
+		给定一棵二叉树，返回所有重复的子树。对于同一类的重复子树，你只需要返回其中任意一棵的根结点即可。
+
+		两棵树重复是指它们具有相同的结构以及相同的结点值。
+
+		示例 1：
+
+				1
+			   / \
+			  2   3
+			 /   / \
+			4   2   4
+			   /
+			  4
+		下面是两个重复的子树：
+
+			  2
+			 /
+			4
+		和
+
+			4
+			
+		序列化二叉树，利用序列化后的字符串作为当前子树的唯一标识，当结点完全一样的时候，id一样。
+		
+		将id作为 键，将结点作为值。 值大于2个的都是重复的结点，选一个即可。
+			
+			public String getSeq(TreeNode node){
+				if(node==null){ return "";}
+
+				String key = "";
+				if(node.left==null&&node.right==null){
+					key = String.valueOf(node.val);  
+				}else{
+					String leftChild = getSeq(node.left);
+					String rightChild = getSeq(node.right);
+					key = String.valueOf(node.val)+"("+ leftChild +"," + rightChild+")";
+				}
+
+				if(!map.containsKey(key)){
+					List<TreeNode> son = new ArrayList<>();
+					son.add(node);
+					map.put(key,son);
+				}else{
+					map.get(key).add(node);
+				}
+				return key;
+			}
+			 
