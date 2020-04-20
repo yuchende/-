@@ -1,0 +1,93 @@
+
+https://leetcode-cn.com/explore/interview/card/top-interview-questions-easy/23/dynamic-programming/55/
+
+
+股票问题：
+	https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/solution/yi-ge-fang-fa-tuan-mie-6-dao-gu-piao-wen-ti-by-l-3/
+	
+	https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/solution/gu-piao-wen-ti-python3-c-by-z1m/
+
+	最大子序和
+简单
+	买卖股票的最佳时机 II
+简单
+	买卖股票的最佳时机 III
+困难
+	买卖股票的最佳时机 IV
+困难
+	最佳买卖股票时机含冷冻期
+	
+
+dynamic programming 英文是这个，不要被这个渣渣中文翻译动态规划给迷惑了。
+programming大家理解成列表格，对应上面状态机的不同天数。实际上我们都是
+在列出收益的表格然后复用，所以动态规划应该理解成我们动态列表格计算收益，然后复用。
+
+
+
+题目1.
+
+		给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
+
+		如果你最多只允许完成一笔交易（即买入和卖出一支股票一次），设计一个算法来计算你所能获取的最大利润。
+
+		注意：你不能在买入股票前卖出股票。
+
+		 
+
+		示例 1:
+
+		输入: [7,1,5,3,6,4]
+		输出: 5
+		解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+			 注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
+		示例 2:
+
+		输入: [7,6,4,3,1]
+		输出: 0
+		解释: 在这种情况下, 没有交易完成, 所以最大利润为 0
+	
+	dp解法
+		思路：
+			d[i] 表示第i天的利润
+			d[i] = max(d[i-1], prices[i] - minprice)   //第i天的利润等于 第i-1天的利润 和 第i天利润最大值 
+			初始化条件。
+			
+			 public int maxProfit(int[] prices) {
+				//17.38
+			   if(prices.length <= 1){ return 0;}
+				
+				int[] money = new int[prices.length];
+				int minprice = prices[0];
+				money[0] = 0;
+				for(int x = 1; x < prices.length; x++){
+					minprice = Math.min(minprice,prices[x]);
+					money[x] = Math.max(money[x - 1] ,prices[x] - minprice );
+				}
+
+				return money[money.length - 1];
+			}
+			优化如下，我们不需要一直维护着列表。每一次都
+			
+			
+	优化解法
+			思路：
+				卖股票，做2件事
+				1.当前价格是否最低价格，是比前几天价格还低的 最低价格就该买入
+				2.当前价格不是最低价那么就可以卖出，如果比已有利润多则卖出，否则不卖。
+				
+			
+		    public int maxProfit(int[] prices) {
+				//17.38
+			   if(prices.length <= 1){ return 0;}
+				
+			   int minprice = prices[0];
+			   int money = 0;
+			   for( int x = 0; x < prices.length; x++){
+				   if(prices[x] < minprice ){
+					   minprice = prices[x];
+				   }else if(prices[x] - minprice > money ){  //
+					   money = prices[x] - minprice;
+				   }
+			   }
+				return money > 0 ? money : 0; 
+			}

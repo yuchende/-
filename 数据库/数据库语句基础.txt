@@ -1,0 +1,66 @@
+
+
+
+ifnull语句过滤空值
+
+	ifnull((statement),null)
+	如果statement语句为null，该句返回为第二个null字段。
+	
+	select ifnull(
+      (
+      select distinct Salary getNthHighestSalary
+      from Employee
+      order by Salary desc
+      limit n, 1
+      ), null)
+	
+
+
+创建函数调用函数
+	https://www.cnblogs.com/sixiong/p/4438445.html
+	创建函数
+		create function function_Name(N int) returns int
+		begin
+		  return (
+			  # Write your MySQL query statement below.
+			  
+		  );
+		end
+		
+	调用函数
+		select function_Name(2);
+		
+		
+		mysql> delimiter $$
+		mysql>
+		mysql> CREATE FUNCTION myFunction
+		-> (in_string VARCHAR(255),
+		-> in_find_str VARCHAR(20),
+		-> in_repl_str VARCHAR(20))
+		->
+		-> RETURNS VARCHAR(255)
+		-> BEGIN
+		-> declare l_new_string VARCHAR(255);
+		-> declare l_find_pos INT;
+		->
+		-> SET l_find_pos=INSTR(in_string,in_find_str);
+		->
+		-> IF (l_find_pos>0) THEN
+		-> SET l_new_string=INSERT(in_string,l_find_pos,LENGTH(in_find_str),in_repl_str);
+		-> ELSE
+		-> SET l_new_string=in_string;
+		-> END IF;
+		-> RETURN(l_new_string);
+		->
+		-> END$$
+		Query OK, 0 rows affected (0.00 sec)
+		 
+		mysql>
+		mysql> delimiter ;
+		mysql> select myFunction('ABC','A','Z');
+		+---------------------------+
+		| myFunction('ABC','A','Z') |
+		+---------------------------+
+		| ZBC |
+		+---------------------------+
+		1 row in set (0.00 sec)

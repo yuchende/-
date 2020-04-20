@@ -1,7 +1,28 @@
-一部分包括算法的笔记
-另一部分包括算法用到的java语法
+// 数组 转换 成 列表，集合 等
 
-- //  String类的函数,    StringBuilder,StringBuffer,String
+```java
+//数组转化为列表
+int[] src = {1,2,3,4,5,6,7,8,9,10};
+List<Integer> list = Arrays.stream( src ).boxed().collect(Collectors.toList());
+https://www.cnblogs.com/ainsliaea/p/11366481.html
+
+对于 Integer 数组，可以使用 Arrays.asList、Arrays.stream、Collections.addAll 或者 Stream.of 进行转换：
+但是 Arrays.asList 返回的是只读的 List 不支持 add 和 remove 的操作，如果往里 add 会报 UnsupportedOperationException
+
+Integer[] arr2 = {234, 2, 23, 777, 2};
+
+List<Integer> list = new ArrayList<>(arr2.length);
+Collections.addAll(list, arr2);
+
+List<Integer> list1 = Stream.of(arr2).collect(Collectors.toList());
+List<Integer> list2 = Arrays.stream(arr2).collect(Collectors.toList());
+List<Integer> list3 = Arrays.asList(arr2);
+
+
+
+```
+
+//  String类的函数,    StringBuilder,StringBuffer,String
 
 ```java
 //字符数组,各种类型转换成String
@@ -24,7 +45,7 @@ str.replace()
     
 ```
 
-- //HashSet  无序不重复集合,   HashMap<K，V> 
+//HashSet  无序不重复集合,   HashMap<K，V> 
 
 ```java
 HashSet<Integer> result=new HashSet<>();//构造函数参数还可有Collection<? extends E> c
@@ -37,15 +58,18 @@ for(Integer i:result){ //便利数组
     
 }
 HashMap<Character,Integer> hash =new HashMap<>();
-hash.put(key,value);
-value hash.get(key);
-hash.containsKey(obj)  hash.containsValue(obj)
-    
-Set  hash.keySet()
-Set  hash.values()
+        hash.put(key,value);
+        value hash.get(key);
+            replace(key,new_value);
+
+        hash.containsKey(obj)  hash.containsValue(obj)
+
+
+        Set  hash.keySet()
+        Set  hash.values()
 ```
 
-- //List 链表     LinkedList
+//List 链表     LinkedList
 
 ```java
 //将数组转换成链表
@@ -55,20 +79,14 @@ List<T> list = Arrays.asList(T..a)
     
     
 LinkedList
-    LinkedList<int[]> list=new LinkedList<>();
-    list.add(intervals[i]);
-    result[i]=list.removeFirst(); 
-    list.size();
-    list.isEmpty()//遍历集合
-	eg: method
-	removeFirst()  removeLast()
-    addFirst()	addLast()
-    indexOf(Object obj) // 返回元素第一次出现的下标，不存在返回。
-    remove(int index) remove(Object obj)
-
+LinkedList<int[]> list=new LinkedList<>();
+list.add(intervals[i]);
+result[i]=list.removeFirst(); 
+list.size();
+list.isEmpty()//遍历集合
 ```
 
-- //数组，一维数组，二维数组
+//数组，一维数组，二维数组
 
 ```java
 //二维数组

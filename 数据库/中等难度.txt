@@ -1,0 +1,176 @@
+import java.util.Scanner;
+
+public class Main {
+	// 一般输入输出的模型
+	// https://discuss.acmcoder.com/topic/5d47dfa8b99ad44605a1700b
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+
+		while(sc.hasNext()) {
+			//int[][] mima = new int[3][3];
+			
+			for(int i=0;i<=n;i++) {
+				String line = sc.nextLine();
+				//输入n行数据
+			}
+			
+			// 处理并输出
+		}
+	}
+}
+
+
+
+基数排序 时间复杂度 O(d*2n)  分为d个关键字
+空间复杂度为O(n+k)，其中k为桶的数量，需要分配n个数   
+https://www.cnblogs.com/l199616j/p/10738568.html
+
+待排序元素规模较小时，宜选取哪种排序算法效率最高,冒泡排序
+
+
+面有关java threadlocal说法正确的有？
+ABCD
+A
+ThreadLocal存放的值是线程封闭，线程间互斥的，主要用于线程内共享一些数据，避免通过参数来传递
+B
+从线程的角度看，每个线程都保持一个对其线程局部变量副本的隐式引用，只要线程是活动的并且 ThreadLocal 实例是可访问的；在线程消失之后，其线程局部实例的所有副本都会被垃圾回收
+C
+在Thread类中有一个Map，用于存储每一个线程的变量的副本
+D
+对于多线程资源共享的问题，同步机制采用了“以时间换空间”的方式，而ThreadLocal采用了“以空间换时间”的方式
+
+
+https://baijiahao.baidu.com/s?id=1636557218432721275&wfr=spider&for=pc
+transient 变量和下面哪一项有关？
+	属性前添加关键字transient，序列化对象的时候，这个属性就不会被序列化
+
+创建索引的语句是create index indexname on tablename (username (length))
+其中若是char和varchar类型，length可以小于字段实际长度，若是blob或text类型，必须指定length！
+
+产生哈希冲突的影响因素有哪些？ABD
+A装填因子 B哈希函数 C哈希表长 D处理冲突的方法
+
+P数据报的收发方进行跨网投递时，发送方需利用ARP协议获取哪些信息
+	发送方本网段路由器对应端口的MAC地址
+	
+	
+dns服务主配置文件
+	named.conf
+	
+代理模式应用的场合，说法正确的是？
+A远程代理，未一个对象在不同的地址空间提供局部代表
+B虚拟代理，根据需要创建开销很大的对象
+
+JAVA
+数组元素在栈区，链表元素在堆区
+
+
+byte运算时提升为int，+= -=会隐式类型转换
+public static void main(String args[]) {       
+      byte a = 3;        
+      byte b = 2;        
+      b = a + b;       
+      System.out.println(b);    
+}
+
+java用（监视器）机制实现了进程之间的同步执行
+
+
+
+
+
+
+
+
+前N高，最高，第N高。先连接，后子查珣
+
+
+部门工资前三高的所有员工
+https://leetcode-cn.com/problems/department-top-three-salaries/solution/185-bu-men-gong-zi-qian-san-gao-de-yuan-gong-by-li/
+			select
+			d.Name as 'Department',
+			e1.Name as 'Employee',
+			Salary
+		from 
+			Employee e1
+			join Department d
+			on e1.DepartmentId = d.Id
+		where (
+			select count(distinct x.Salary)
+			from Employee x
+			where x.DepartmentId = e1.DepartmentId
+			and x.Salary > e1.Salary
+		) < 3
+		
+
+查找每个部门工资最高的员工
+	-- select d.Name as Department, e.Name as Employee,e.Salary as Salary
+	-- from Employee e
+	-- join Department d
+	-- on e.DepartmentId = d.Id
+	-- where (e.Salary,e.DepartmentId) in
+	-- (
+	--     select Max(Salary) as Salary,DepartmentId
+	--     from Employee
+	--     group by DepartmentId
+	-- )
+
+
+查找第N高的数字
+	CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+	BEGIN
+	  set n = N - 1;
+	  RETURN (
+		  # Write your MySQL query statement below.
+		  select ifnull(
+			  (select distinct Salary getNthHighestSalary
+			  from Employee 
+			  order by Salary desc 
+			  limit n,1)
+			  ,null)
+		  
+	  );
+	END
+	//记得括号，ifnull中	
+
+
+编写一个 SQL 查询，查找所有至少连续出现三次的数字。
+
+			+----+-----+
+			| Id | Num |
+			+----+-----+
+			| 1  |  1  |
+			| 2  |  1  |
+			| 3  |  1  |
+			| 4  |  2  |
+			| 5  |  1  |
+			| 6  |  2  |
+			| 7  |  2  |
+			+----+-----+
+			例如，给定上面的 Logs 表， 1 是唯一连续出现至少三次的数字。
+
+			+-----------------+
+			| ConsecutiveNums |
+			+-----------------+
+			| 1               |
+			+-----------------+
+
+
+select distinct(a.Num) ConsecutiveNums 
+from Logs a,Logs b,Logs c
+where a.Id = b.Id + 1 and b.Id = c.Id + 1 and a.Num = b.Num and b.Num  = c.Num;
+
+
+select distinct Num as ConsecutiveNums
+from (
+    select Num,
+    case 
+    when @prev = Num then @inc := @inc + 1 
+   #如果Num和比较项相同，Inc计数项加一
+    when (@prev := Num) is not null then @inc := 1 
+    #
+    end as CNT 
+    from logs ,(select @prev :=null,@inc := 0)as t  
+    #防止Num中有0
+    )as temp
+where temp.CNT >=3;

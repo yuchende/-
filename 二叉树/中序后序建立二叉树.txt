@@ -1,0 +1,59 @@
+
+
+根据一棵树的中序遍历与后序遍历构造二叉树。
+
+注意:
+你可以假设树中没有重复的元素。
+
+例如，给出
+
+中序遍历 inorder = [9,3,15,20,7]
+后序遍历 postorder = [9,15,7,20,3]
+返回如下的二叉树：
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+
+
+思路：
+	每次找到根节点在2个集合中的位置，划分左右子树区间。
+	
+	1. 每次保证区间在正常范围内，即考虑边界值。
+	2. 且区间内有元素。
+	
+	3. 查找根元素在数组1中的位置。
+	
+
+	
+中序和前序遍历是一样的。
+	class Solution {
+		private int[] pre;
+		private int[] in;
+		Map<Integer,Integer> map = new HashMap<>();
+		int r = 0;
+		public TreeNode buildTree(int[] preorder, int[] inorder) {
+				
+			pre = preorder;
+			in  = inorder;
+			for(int i = 0;i<inorder.length;i++){
+				map.put(inorder[i],i);
+			}
+			return buildTree2(0 , preorder.length - 1);
+			
+		}
+		public TreeNode buildTree2(int L1,int L2){
+			if(L1 - L2 > 0 ){ return null;}  //考虑 边界值的情况
+
+			int val = pre[r++];
+			TreeNode root = new TreeNode(val);
+			
+			int rootIndex = map.get(val);
+
+			root.left = buildTree2(L1, rootIndex -1); 
+			root.right = buildTree2(rootIndex + 1 , L2);
+			return root;
+		}
+	}

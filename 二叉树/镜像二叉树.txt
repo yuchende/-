@@ -1,0 +1,74 @@
+
+
+
+给定一个二叉树，检查它是否是镜像对称的。
+
+ 
+
+例如，二叉树 [1,2,2,3,4,4,3] 是对称的。
+
+    1
+   / \
+  2   2
+ / \ / \
+3  4 4  3
+ 
+
+但是下面这个 [1,2,2,null,3,null,3] 则不是镜像对称的:
+
+    1
+   / \
+  2   2
+   \   \
+   3    3
+   
+思路：
+	中序遍历，一个中左右顺序遍历，另外一个中右左的顺序遍历。即是对称的。
+	
+	层次遍历，每次弹出2个结点看是否相等。层次遍历和下面的思路相似，都是比较2可相同的树。
+	
+	
+   
+ public boolean isSymmetric(TreeNode root) {
+        // 22.01
+        return isTrue(root,root);
+    }
+    public boolean isTrue(TreeNode root1,TreeNode root2){
+        if(root1 == null && root2 == null){ return true;}
+        if(root1 == null || root2 == null){ return false;}
+        
+        return (root1.val == root2.val) && isTrue(root1.left,root2.right) && isTrue(root1.right,root2.left);
+
+    }
+	
+	 public boolean isSymmetric(TreeNode root) {
+        // 22.01
+        Queue<TreeNode> que = new LinkedList<>();
+        que.offer(root);
+        que.offer(root);
+        while(!que.isEmpty()){
+            TreeNode cur1 = que.poll();
+            TreeNode cur2 = que.poll();
+            if(cur1 == null && cur2 == null) { continue;}
+            if(cur1 == null || cur2 == null){ return false;}
+            if(cur1.val == cur2.val){
+                
+                que.offer(cur1.left);
+                que.offer(cur2.right);
+                que.offer(cur1.right);
+                que.offer(cur2.left);
+                
+            }else{
+                return false;
+            }
+        }
+        return true;
+    }
+	
+	
+	
+	
+	
+	
+	
+	
