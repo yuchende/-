@@ -1,0 +1,148 @@
+
+1.4 图的遍历 DFS 和BFS
+1.5 图Prime，和Kruscal算法
+1.6 图Dijkstra 和 Bellman ford 算法
+
+2.1拓扑排序
+
+
+
+
+图的遍历
+	DFS
+	===============Code===================
+		// 记录每个顶点是否被访问过
+		boolean visited[] = new boolean[V];
+
+		// 从编号为 s 的顶点开始做深度优先遍历
+		void DFS(int s)
+		{
+			// 首先访问出发点
+			visited[s] = true;
+			System.out.print(v + " ");
+
+			// 接着依次访问 s 的所有未被访问过的邻接点并均标记为已访问过
+			for(each node i which are adjacence of s)
+			{
+				if (!visited[i]) {
+					DFS(i);
+				}
+			}
+		}
+		// 如果采用邻接矩阵存储，则时间复杂度为 O(n^2)；当采用邻接表时时间复杂度为 O(n + e)。
+	====================================
+	BFS
+	===============Code=================
+		// 从编号为 s 的顶点开始做广度优先遍历
+		void BFS(int s)
+		{
+			// 记录每个顶点是否被访问过
+			boolean visited[] = new boolean[V];
+
+			// 使用队列
+			LinkedList<Integer> queue = new LinkedList<Integer>();
+
+			// 首先访问出发点
+			visited[s] = true;
+			queue.add(s);
+
+			while (!queue.isEmpty())
+			{
+				s = queue.poll();
+				System.out.print(s + " ");
+
+				// 接着依次访问 s 的所有未被访问过的邻接点并均标记为已访问过
+				for(each node i which are adjacence of s)
+				{
+					if (visited[i] == false) // 若没访问过
+					{
+						visited[i] = true; //访问，并设置访问过
+						queue.offer(i); // 将当年前结点放入队列尾部。
+					}
+				}
+			}
+		}
+	====================================
+	
+Kruscal算法和并查集
+	====================================
+		class Solution {
+		//同一个联通分量的每个顶点的最顶层的parent是相同的。
+		//不同的联通分量的每个顶点的最顶层的parent是不同的。
+		parent[x]表示x的parent，但不是最顶层的parent。
+		private int find(int[] parent, int x) {
+			int node = x;
+			while (parent[node] != node) {
+				node = parent[node];
+			}
+			return node;
+		}
+		//  找到x，y的顶层parent，如果x和y的parent不同，说明是两个联通分量。
+		//  合并这两个联通分量，将其
+		private void union(int[] parent, int x, int y) {
+			int parentX = find(parent, x);
+			int parentY = find(parent, y);
+			if (parentX != parentY) {
+				parent[parentY] = parentX;
+			}
+		}
+
+		public int[] findRedundantConnection(int[][] edges) {
+			int N = edges.length;
+			int[] parent = new int[N + 1];
+			// 初始化，将每个顶点看作是单独的联通分量，其parent是自己。
+			for (int i = 1; i < N + 1; i++) {
+				parent[i] = i;
+			}
+
+			for (int[] edge : edges) {
+				//查找每一条边，若边两端的parent相同，则这条边便是冗余边。即这条边的两个顶点在同一个联通分量上。即形成闭环。
+				if (find(parent, edge[0]) == find(parent, edge[1])) {
+					return edge;
+				} else {
+					//若两个联通分量不同则，将两个联通分量合并.
+					union(parent, edge[0], edge[1]);
+				}
+			}
+
+			return new int[0];
+		}
+	}
+	
+	====================================
+
+拓扑排序：
+	https://www.cnblogs.com/bigsai/p/11489260.html
+	
+	
+	注意点：
+		1.如果是1，2，3，4，5，6这样的序列求拓扑排序，我们可以考虑用数组，但是如果遇到1，2，88，9999类似数据，可以考虑用map中转一下。
+	=================Code====================
+		public void print(int num,int[][] b) {
+			//初始化邻接表和入度表
+			List<List<Integer>> lists = new ArrayList<>();
+			int[] indegree = new int[num];
+			for(int x = 0; x < num; x++)
+				lists.add(new ArrayList<>());
+			for(int[] arr:b){
+				indegree[arr[1]]++;
+				lists.get(arr[0]).add(arr[1]);
+			}
+			
+			// 将入度为0的全部入队
+			Queue<Integer> que = new LinkedList<>();
+			for(int x = 0; x < num; x++)
+				if(indegree[x]==0) que.offer(x);
+			
+			//边访问所有入度为0 的结点。一边将当前结点为起点的结点的入度 减去1.
+			//若入度为0的入队。
+			while(!que.isEmpty()){
+				int start = que.poll();
+				System.out.print((start) + ",");
+				for(int x:lists.get(start))
+					if(--indegree[x] == 0) que.offer(x);
+			}
+
+
+		}
+	=========================================

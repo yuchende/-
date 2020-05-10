@@ -119,7 +119,7 @@ list.isEmpty()//遍历集合
 
 ```
 
-//队列，栈
+//队列，栈，优先队列
 
 ```java
 Queue<Integer> queue = new LinkedList<>();
@@ -133,6 +133,19 @@ stack.peek() //返回栈顶，不
 stack.push()
 stack.pop()
 stack.empty()
+    
+// 优先队列
+// https://www.cnblogs.com/wei-jing/p/10806236.html
+// https://www.cnblogs.com/9dragon/p/10739121.html介绍其实现	
+Queue<Integer> que = new PriorityQueue<>(((o1, o2) -> {
+            return o1.intValue() - o2.intValue();}));
+        que.offer(4);
+        que.offer(2);
+        que.offer(5);
+        que.offer(1);
+        while (que.isEmpty() == false) {
+            System.out.print(que.poll()+",");	
+        }
 ```
 
 

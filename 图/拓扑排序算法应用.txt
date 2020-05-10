@@ -1,0 +1,261 @@
+
+
+题目描述： 207. 课程表
+	你这个学期必须选修 numCourse 门课程，记为 0 到 numCourse-1 。
+	在选修某些课程之前需要一些先修课程。 例如，想要学习课程 0 ，你需要先完成课程 1 ，我们用一个匹配来表示他们：[0,1]
+	给定课程总量以及它们的先决条件，请你判断是否可能完成所有课程的学习？
+
+	示例 1:
+		输入: 2, [[1,0]] 
+		输出: true
+		解释: 总共有 2 门课程。学习课程 1 之前，你需要完成课程 0。所以这是可能的。
+	示例 2:
+		输入: 2, [[1,0],[0,1]]
+		输出: false
+		解释: 总共有 2 门课程。学习课程 1 之前，你需要先完成​课程 0；并且学习课程 0 之前，你还应先完成课程 1。这是不可能的。
+
+	
+思路：
+		能否学完所有课程，就看所有课程能否按照拓扑排序正常输出。
+			什么是拓扑排序？ 就是一系列事件，每个事件的发生都有先后顺序。将这些事件串行排序。
+			能够始得排序后的序列中任意两个事件的先后顺序 和 排序前的先后顺序是相对不变的。且能够排序后长度和定点数相同。
+		
+		在拓扑排序中，每访问一个结点，就记录一个点。到最后看访问结点的数量和课程的数量是否相同。
+		
+		拓扑排序的思路：
+			1.将入度为0的顶点全部入队。
+			2.每弹出一个顶点k，将以这个顶点为起点的结点m ，m的入度减去1. 或邻接表中删除当前顶点后的所有邻接顶点。
+			3.若结点m的度为0，将结点入队。重复步骤2和3.
+		
+
+
+
+题目描述：210 课程表2
+	现在你总共有 n 门课需要选，记为 0 到 n-1。
+	在选修某些课程之前需要一些先修课程。 例如，想要学习课程 0 ，你需要先完成课程 1 ，我们用一个匹配来表示他们: [0,1]
+	给定课程总量以及它们的先决条件，返回你为了学完所有课程所安排的学习顺序。
+	可能会有多个正确的顺序，你只要返回一种就可以了。如果不可能完成所有课程，返回一个空数组
+	
+	示例 1:
+
+	输入: 2, [[1,0]] 
+	输出: [0,1]
+	解释: 总共有 2 门课程。要学习课程 1，你需要先完成课程 0。因此，正确的课程顺序为 [0,1] 。
+	示例 2:
+
+	输入: 4, [[1,0],[2,0],[3,1],[3,2]]
+	输出: [0,1,2,3] or [0,2,1,3]
+	解释: 总共有 4 门课程。要学习课程 3，你应该先完成课程 1 和课程 2。并且课程 1 和课程 2 都应该排在课程 0 之后。
+	     因此，一个正确的课程顺序是 [0,1,2,3] 。另一个正确的排序是 [0,2,1,3] 。
+	说明:
+
+	输入的先决条件是由边缘列表表示的图形，而不是邻接矩阵。详情请参见图的表示法。
+	你可以假定输入的先决条件中没有重复的边。
+	
+	这个问题相当于查找一个循环是否存在于有向图中。如果存在循环，则不存在拓扑排序，因此不可能选取所有课程进行学习。
+	通过 DFS 进行拓扑排序 - 一个关于Coursera的精彩视频教程（21分钟），介绍拓扑排序的基本概念。
+	拓扑排序也可以通过 BFS 完成。
+	
+	
+	思路：
+		就是拓扑排序，后输出序列。
+		需要注意点：
+			图中可能没有边。那么可以按顺序输出。
+
+
+
+
+题目210
+=============Code====================
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        // 若没有边，都是顶点，那么就依次输出。即可。
+        if(prerequisites.length == 0 && numCourses >= 1){
+            int[] ans = new int[numCourses];
+            for(int x = 0; x < numCourses ; x++)
+                ans[x] = x;
+            return ans;
+        }
+        int[] indegree = new int[numCourses];
+        List<List<Integer>> adj = new ArrayList<>();
+        for(int x = 0; x < numCourses; x++)
+            adj.add(new ArrayList<>());
+        for(int[] edge:prerequisites){
+            indegree[edge[0]]++;
+            adj.get(edge[1]).add(edge[0]);
+        }
+        Queue<Integer> que = new LinkedList<>();
+        for(int x = 0; x < numCourses; x++)
+            if(indegree[x] == 0) que.offer(x);
+
+        int[] res = new int[numCourses];
+        int k = 0;
+        while(que.isEmpty()==false){
+            int pre = que.poll();
+            res[k++] = pre;
+            for(int cur:adj.get(pre))
+                if(--indegree[cur] == 0) que.offer(cur);
+        }
+        return numCourses == k ? res : new int[0];
+    }
+=====================================
+
+
+拓扑排序
+=============Code===================
+	//邻接矩阵的方法   耗时24ms
+	class Solution {
+		public boolean canFinish(int numCourses, int[][] prerequisites) {
+			
+			int[][] adj = new int[numCourses][numCourses];
+			int[] indegree = new int[numCourses];
+			//构造有向图
+			for(int[] arr: prerequisites){
+				int i = arr[1];
+				int j = arr[0];
+				// 防止重复统计
+				if(adj[i][j] == 0){ indegree[j]++; }
+				adj[i][j] = 1;
+			}
+			Queue<Integer> que = new LinkedList<>();
+			for(int x = 0; x < indegree.length; x++){
+				if(indegree[x] == 0){ que.offer(x); }
+			}
+			int count = 0;
+			while(que.isEmpty()==false){
+				int start = que.poll();
+				count++;
+				for(int x = 0; x < numCourses; x++){
+					if(adj[start][x] == 1){
+						adj[start][x] = 0;
+						indegree[x]--;
+						if(indegree[x] == 0){ que.offer(x);}
+					}
+				}
+			}
+			return count == numCourses;
+		}
+	}
+===================================
+	// 邻接表的方法，耗时6ms。优化
+	class Solution {
+		public boolean canFinish(int numCourses, int[][] prerequisites) {
+			int[] indegrees = new int[numCourses];
+			List<List<Integer>> adjacency = new ArrayList<>();
+			Queue<Integer> queue = new LinkedList<>();
+			for(int i = 0; i < numCourses; i++)
+				adjacency.add(new ArrayList<>());
+			// Get the indegree and adjacency of every course.
+			for(int[] cp : prerequisites) {
+				indegrees[cp[0]]++;
+				adjacency.get(cp[1]).add(cp[0]);
+			}
+			// Get all the courses with the indegree of 0.
+			for(int i = 0; i < numCourses; i++)
+				if(indegrees[i] == 0) queue.add(i);
+			// BFS TopSort.
+			while(!queue.isEmpty()) {
+				int pre = queue.poll();
+				numCourses--;
+				for(int cur : adjacency.get(pre))
+					if(--indegrees[cur] == 0) queue.add(cur);
+			}
+			return numCourses == 0;
+		}
+	}
+===================================
+		//深度优先遍历的方法
+		class Solution {
+			public boolean canFinish(int numCourses, int[][] prerequisites) {
+				
+				// init structure
+				List<List<Integer>> adjacency = new ArrayList<>();
+				for(int i = 0; i < numCourses; i++)
+					adjacency.add(new ArrayList<>());
+				for(int[] cp : prerequisites)
+					adjacency.get(cp[1]).add(cp[0]);
+				
+				//
+				int[] flags = new int[numCourses];
+				for(int i = 0; i < numCourses; i++)
+					if(!dfs(adjacency, flags, i)) return false;
+				
+				// 若整个图 DFS 结束并未发现环，返回 True。
+				return true;
+			}
+			private boolean dfs(List<List<Integer>> adjacency, int[] flags, int i) {
+				if(flags[i] == 1) return false;  // 当 flag[i] == 1，说明在本轮 DFS 搜索中节点 i 被第 22 次访问，即 课程安排图有环 ，直接返回 FalseFalse。
+				if(flags[i] == -1) return true; //  当 flag[i] == -1，说明当前访问节点已被其他节点启动的 DFS 访问，无需再重复搜索，直接返回 TrueTrue
+				
+				flags[i] = 1; // 将当前访问节点 i 对应 flag[i] 置 11，即标记其被本轮 DFS 访问过；
+				
+				// 递归访问当前节点 i 的所有邻接节点 j，当发现环直接返回 False：
+				for(Integer j : adjacency.get(i))
+					if(!dfs(adjacency, flags, j)) return false;
+				
+				// 当前节点所有邻接节点已被遍历，并没有发现环，则将当前节点 flag 置为 -1−1 并返回 True
+				flags[i] = -1;
+				
+				
+				return true;
+			}
+		}
+
+	
+===================================
+	//耗时1ms 再优化
+	class Solution {
+		public boolean canFinish(int numCourses, int[][] prerequisites) {
+			if(prerequisites==null || prerequisites.length==0) return true;
+
+			//构建图
+			Node[] graph=new Node[numCourses];
+			for(int[] plan:prerequisites){
+				//头插法
+				graph[plan[0]]=new Node(plan[1],graph[plan[0]]);
+			}
+			//判断是否存在环
+			int[] visited=new int[numCourses];
+			for(int i=0;i<numCourses;i++){
+				//未遍历则遍历，如果存在环，则不符合要求
+				if(visited[i]!=-1 && !isDAG(i,graph,visited)) return false;
+				//遍历完成，以i出发不存在环路，置为访问且无环
+				visited[i]=-1;
+			}
+			return true;
+		}
+
+		private boolean isDAG(int start,Node[] graph,int[] visited){
+			//置为正在遍历
+			visited[start]=1;
+			Node temp=graph[start];
+			while(temp!=null){
+				//之前已经遍历过，无环
+				if(visited[temp.val]==-1){
+					temp=temp.next;
+					continue;
+				}
+				//存在回路
+				if(visited[temp.val]==1 || !isDAG(temp.val,graph,visited)) return false;
+				//遍历结束，置为已访问且无环
+				visited[temp.val]=-1;
+				temp=temp.next;
+			}
+			return true;
+		}
+	}
+
+	class Node{
+		int val;
+		Node next;
+
+		Node(int val){
+			this.val=val;
+		}
+
+		Node(int val,Node next){
+			this.val=val;
+			this.next=next;
+		}
+	}
+=====================================
+

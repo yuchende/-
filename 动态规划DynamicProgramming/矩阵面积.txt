@@ -1,0 +1,197 @@
+
+1.题目名称 <柱状图中最大的矩形>
+	描述：
+		给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+		求在该柱状图中，能够勾勒出来的矩形的最大面积。
+		
+		以上是柱状图的示例，其中每个柱子的宽度为 1，给定的高度为 [2,1,5,6,2,3]。
+		输入: [2,1,5,6,2,3]
+		输出: 10
+		
+	思路：
+		利用单调递增栈
+		单调递增栈的特点：
+			1.栈顶元素左边第一个元素，永远是第一个比它小的数。
+			2.栈顶元素右边第一个比它小的元素，是当前要入栈的元素。
+			
+			如【2,1,5,6,2,3】这个数组
+			当前栈【-1】初始化放入标记位-1.  任何数减去-1都加1.
+			
+			特点1：
+				如【....,Ai-1, Ai】当前栈栈顶为Ai
+				Ai与Ai-1之间有弹出元素时，那么Ai一定是弹出元素中最小的。如 2，4，5，3.
+				入栈过程为 2,4,5 --> 2,4 ---> 2 --> 2,3
+				如果没有那其Ai+1 ,Ai-1之间只有1个元素。
+				
+			那么面积计算的过程就是每个柱子，往左找第一个比它小，往右找第一个比它小。的过程
+			面积计算公式：max_area = Max( max_area , (i - stack[pop-1] - 1)*stack[pop]  )
+			
+			计算过程：
+				
+				1.栈顶元素比当前元素大，若不大，执行步骤2
+						:栈顶元素弹出
+						::计算面积 max_area = Max( max_area , (i - stack[pop-1] - 1)*stack[pop]  )
+						::重复1。
+		
+				2.栈顶元素比当前元素小，当前元素入栈。若不小，执行步骤1 当前元素指数组中顺序遍历的当前元素。
+				
+				3.若数组中全部入栈后，栈中还有数组中元素。
+					那么每一个元素的右边界(即右边第一个比栈顶元素小的位置)已经固定为最后一个元素的下标。
+					那么只需每一步弹出栈顶元素计算即可。
+					maxarea = Math.max(maxarea, heights[st.pop()]*(heights.length - 1 - st.peek()));
+	
+	思路2：
+		利用分治思想
+			1.找出当前数组中最小的一个元素。那么这个元素的宽就可以左右延伸到最大。
+			2. 如果数组是递增数组或递减数组。那么这个方法便退化到了O(n^2)原来是O(nlog(n)) 
+			
+			优化：
+				每个子问题，都判断当前数组是否为单调的。如果单调的就按照单调的计算。直接返回。
+			
+			如【2,1,5,6,2,3】被分为 【2】   【1】   【5,6,2,3】三部分。 那么 (end - start + 1)* 1 = 8 = max_area
+			如【5,6,2,3】被分为 【5，6】 【2】 【3】 .那么 (7-4+1)*2=8
+			如【5，6】那么 5*2 = 10.即最大为10.
+
+		
+ 
+2.题目名称 <最大矩形>
+	描述：
+		给定一个仅包含 0 和 1 的二维二进制矩阵，找出只包含 1 的最大矩形，并返回其面积。
+		输入:
+		[
+		  ["1","0","1","0","0"],
+		  ["1","0","1","1","1"],
+		  ["1","1","1","1","1"],
+		  ["1","0","0","1","0"]
+		]
+		输出: 6
+	
+	思路：
+		height[i] :表示当前点的最大高度。即当前点 ，向上连续1的个数。
+		left[i]	  :表示当前点的左边界。
+		right[i]  :表示当前点的右边界。
+		上述3个数组，是二维数组中纵向的状态变量。记录当前点 所在列的状态值。
+		
+		left_boundary
+		right_boundary
+		上面两个变量，是二维数组中 横向的状态变量。 记录当前行的最左和最右边界。
+		
+		则当前点的面积为 height[i] * (right[i] - left[i]) = maxarea
+		
+		
+	
+	总结：
+		像矩阵这种题：边界值一般是 if(matrix.length == 0){return 0;}。即行数大于0
+		
+	
+	
+	
+#=============================================	
+	//题1代码
+	class Solution {
+    
+		public int largestRectangleArea(int[] heights) {
+			if (heights.length == 0) {
+				return 0;
+			} 
+			return process(heights, 0, heights.length - 1);
+		}
+		
+		public int process(int[] height, int start, int end) {
+			
+			if (start > end) {
+				return 0;
+			}
+			
+			int miniIndex = start;
+			
+			boolean sorted = true;
+			
+			for (int i = start + 1; i <= end; i++){
+				if (height[i] < height[i - 1]){
+					sorted = false;
+				}
+				if (height[miniIndex] > height[i]) {
+					miniIndex = i;
+				}
+			}
+			
+			if (sorted) {
+				int result = 0;
+				for (int i = start; i <= end; i++) {
+					result = Math.max(result, (end - i + 1) * height[i]);
+				}
+				return result;
+			}
+			
+			return Math.max(height[miniIndex] * (end - start + 1), Math.max(process(height, start, miniIndex - 1), process(height, miniIndex + 1, end)));
+		}
+
+		
+	}
+
+	//题1代码
+	class Solution {
+		public int largestRectangleArea(int[] heights) {
+			if(heights==null || heights.length==0){ return 0;}
+			Stack<Integer> st = new Stack<>();
+			st.push(-1);
+			int maxarea = 0;
+			for(int x = 0; x < heights.length; x++){
+
+				while(st.peek() != -1 && heights[st.peek()] > heights[x]){
+					int h = heights[st.pop()];
+					maxarea = Math.max(maxarea , (x - st.peek() - 1) * h);
+				}
+				st.push(x);
+			}
+			while(st.peek() != -1){
+				maxarea = Math.max(maxarea, heights[st.pop()]*(heights.length - 1 - st.peek()));
+			}
+			return maxarea;
+		}
+	}
+	
+	
+	//题2代码
+	class Solution {
+    public int maximalRectangle(char[][] matrix) {
+        if(matrix.length == 0){return 0;}
+		//三个列状态变量
+        int[] rb = new int[matrix[0].length];
+        int[] lb = new int[matrix[0].length];
+        int[] h = new int[matrix[0].length];
+		
+        Arrays.fill(rb,matrix[0].length);
+        int ans = 0;
+        for(int x = 0; x < matrix.length; x++){
+		
+            int right_bound = matrix[x].length,left_bound = 0; // 行状态变量
+
+            //update height
+            for(int y = 0 ; y < matrix[x].length; y++){
+                if(matrix[x][y] == '1'){ h[y] = h[y] + 1;}
+                else{  h[y] = 0; }
+            }
+
+            // update left
+            for(int y = 0; y < matrix[x].length; y++){
+                if(matrix[x][y] == '1'){ lb[y] = Math.max(lb[y],left_bound);}
+                else{ lb[y] = 0; left_bound = y+1;}
+            }
+
+            //update right
+            for(int y = matrix[x].length - 1; y >=0 ; y--){
+                if(matrix[x][y] == '1'){rb[y] = Math.min(rb[y],right_bound); }
+                else{ rb[y] = matrix[x].length; right_bound = y; }
+            }
+
+            //update area
+            for(int y = 0; y < matrix[x].length; y++){
+                ans = Math.max(h[y]*( rb[y] - lb[y] ),ans);
+            }
+        }
+        return ans;
+    }
+}
+#==============================================
